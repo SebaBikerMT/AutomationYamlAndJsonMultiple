@@ -742,6 +742,7 @@ public class YamlValidationSteps {
     /**
      * Imprime un subseparador para secciones menores
      */
+    @SuppressWarnings("unused")
     private void imprimirSubSeparador(String titulo) {
         System.out.println("\n" + "-".repeat(40));
         System.out.println("📋 " + titulo);
@@ -751,6 +752,7 @@ public class YamlValidationSteps {
     /**
      * Formatea el contexto de manera más legible
      */
+    @SuppressWarnings("unused")
     private String formatearContexto(String contexto, int maxLength) {
         if (contexto.length() <= maxLength) {
             return contexto;

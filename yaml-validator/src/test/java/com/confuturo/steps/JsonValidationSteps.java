@@ -157,10 +157,13 @@ public class JsonValidationSteps {
             // Intentar con diferentes ramas
             String[] branchesToTry = {"develop", "master", "main"};
             RepositoryFile file = null;
-            String usedBranch = null;
+            
             
             for (String branch : branchesToTry) {
+                
                 try {
+                    @SuppressWarnings("unused")
+                    String usedBranch = null;
                     System.out.println("Intentando obtener archivo de la rama: " + branch);
                     file = gitLabApi.getRepositoryFileApi().getFile(project.getId(), filePath, branch);
                     usedBranch = branch;
@@ -364,6 +367,7 @@ public class JsonValidationSteps {
 }
     
     // Método mejorado para eliminar comentarios de JSON
+    @SuppressWarnings("unused")
     private String removeComments(String json) {
         StringBuilder result = new StringBuilder();
         String[] lines = json.split("\n");

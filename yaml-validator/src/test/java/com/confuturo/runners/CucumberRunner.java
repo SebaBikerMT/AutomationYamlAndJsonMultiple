@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
         "html:target/cucumber-reports/cucumber-html-report.html",
         "json:target/cucumber-reports/cucumber.json",
         "junit:target/cucumber-reports/cucumber.xml",
-        "rerun:target/rerun.txt",
         "json:target/cucumber-json/cucumber-json.report"
     },
     monochrome = true,
