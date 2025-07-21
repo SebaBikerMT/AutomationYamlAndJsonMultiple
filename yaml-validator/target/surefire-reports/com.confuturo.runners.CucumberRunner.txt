@@ -1,0 +1,36 @@
+-------------------------------------------------------------------------------
+Test set: com.confuturo.runners.CucumberRunner
+-------------------------------------------------------------------------------
+Tests run: 88, Failures: 8, Errors: 0, Skipped: 0, Time elapsed: 105.561 s <<< FAILURE! - in com.confuturo.runners.CucumberRunner
+Validación de configuración de archivo json en ambiente de Produccion #2.El archivo YAML debe tener la configuración de servicios correcta #1  Time elapsed: 3.4 s  <<< FAILURE!
+java.lang.AssertionError: Se encontraron 1 errores de validación. Consulta el detalle en los logs.
+	at com.confuturo.steps.YamlValidationSteps.afterScenario(YamlValidationSteps.java:48)
+
+Validación de configuración de archivo json en ambiente de Produccion #2.El archivo YAML debe tener la configuración de servicios correcta #3  Time elapsed: 1.056 s  <<< FAILURE!
+java.lang.AssertionError: Se encontraron 1 errores de validación. Consulta el detalle en los logs.
+	at com.confuturo.steps.YamlValidationSteps.afterScenario(YamlValidationSteps.java:48)
+
+Validación de configuración de archivo json en ambiente de Produccion #2.El archivo YAML debe tener la configuración de servicios correcta #9  Time elapsed: 1.073 s  <<< FAILURE!
+java.lang.AssertionError: Se encontraron 1 errores de validación. Consulta el detalle en los logs.
+	at com.confuturo.steps.YamlValidationSteps.afterScenario(YamlValidationSteps.java:48)
+
+Validación de configuración de archivo json en ambiente de Produccion #2.El archivo YAML debe tener la configuración de servicios correcta #22  Time elapsed: 1.219 s  <<< FAILURE!
+java.lang.AssertionError: Se encontraron 1 errores de validación. Consulta el detalle en los logs.
+	at com.confuturo.steps.YamlValidationSteps.afterScenario(YamlValidationSteps.java:48)
+
+Validación de configuración de archivo json en ambiente de Produccion #2.El archivo YAML debe tener la configuración de servicios correcta #32  Time elapsed: 1.195 s  <<< FAILURE!
+java.lang.AssertionError: Se encontraron 1 errores de validación. Consulta el detalle en los logs.
+	at com.confuturo.steps.YamlValidationSteps.afterScenario(YamlValidationSteps.java:48)
+
+Validación de configuración de archivo json en ambiente de Produccion #2.El archivo YAML debe tener la configuración de servicios correcta #63  Time elapsed: 1.032 s  <<< FAILURE!
+java.lang.AssertionError: Se encontraron 1 errores de validación. Consulta el detalle en los logs.
+	at com.confuturo.steps.YamlValidationSteps.afterScenario(YamlValidationSteps.java:48)
+
+Validación de configuración de archivo json en ambiente de Produccion #2.El archivo YAML debe tener la configuración de servicios correcta #80  Time elapsed: 1.031 s  <<< FAILURE!
+java.lang.AssertionError: Se encontraron 1 errores de validación. Consulta el detalle en los logs.
+	at com.confuturo.steps.YamlValidationSteps.afterScenario(YamlValidationSteps.java:48)
+
+Validación de configuración de archivo json en ambiente de Produccion #2.El archivo YAML debe tener la configuración de servicios correcta #81  Time elapsed: 0.999 s  <<< FAILURE!
+java.lang.AssertionError: Se encontraron 1 errores de validación. Consulta el detalle en los logs.
+	at com.confuturo.steps.YamlValidationSteps.afterScenario(YamlValidationSteps.java:48)
+

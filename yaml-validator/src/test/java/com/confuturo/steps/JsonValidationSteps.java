@@ -202,8 +202,8 @@ public class JsonValidationSteps {
         }
     }
 
-    @Then("el archivo Json NO debe contener la palabra {string}")
-    public void elArchivoJsonNoDebeContenerLaPalabra(String palabra) {
+@Then("el archivo Json NO debe contener la palabra {string}")
+public void elArchivoJsonNoDebeContenerLaPalabra(String palabra) {
     System.out.println("\n===== VERIFICANDO QUE NO EXISTA LA PALABRA EXACTA =====");
     System.out.println("Palabra EXACTA que NO debe existir: '" + palabra + "'");
     System.out.println("Nota: Solo busca la palabra completa, no como parte de otras palabras");
@@ -212,6 +212,13 @@ public class JsonValidationSteps {
         String errorMsg = "El contenido del archivo está vacío o no se ha cargado";
         System.err.println("¡ERROR DE VALIDACIÓN! " + errorMsg);
         validationErrors.add(errorMsg);
+        
+        // Espera de 1 segundo antes de terminar
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         return;
     }
     
@@ -266,21 +273,40 @@ public class JsonValidationSteps {
             System.out.println("ℹ Confirmado: La secuencia '" + palabra + "' no aparece en absoluto en el archivo");
         }
     }
+    
+    // Espera de 1 segundo al final del método
+    try {
+        Thread.sleep(1000);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
 }
     
-    // Método mejorado para parsear JSON que maneja comentarios
-    private void parseJsonContent() {
+    // Método corregido para parsear JSON que maneja comentarios
+private void parseJsonContent() {
     try {
         // Mostrar el contenido original para depuración
         System.out.println("=== CONTENIDO JSON ORIGINAL ===");
+        System.out.println("Longitud del contenido raw: " + (rawJsonContent != null ? rawJsonContent.length() : "NULL"));
         System.out.println(rawJsonContent);
         System.out.println("=== FIN DEL CONTENIDO ORIGINAL ===");
+        
+        // Verificar que tenemos contenido antes de procesar
+        if (rawJsonContent == null || rawJsonContent.trim().isEmpty()) {
+            System.err.println("ERROR: rawJsonContent está vacío o es null");
+            cleanedJsonContent = "";
+            jsonContent = new JSONObject();
+            return;
+        }
         
         // Eliminar comentarios línea por línea
         StringBuilder cleanedBuilder = new StringBuilder();
         String[] lines = rawJsonContent.split("\n");
         
-        for (String line : lines) {
+        System.out.println("Procesando " + lines.length + " líneas...");
+        
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
             String processedLine = line;
             
             // Buscar // pero excluir :// de las URLs
@@ -304,17 +330,31 @@ public class JsonValidationSteps {
             
             // Si encontramos un comentario real, eliminar desde ahí
             if (commentIndex >= 0) {
-                processedLine = processedLine.substring(0, commentIndex);
+                processedLine = processedLine.substring(0, commentIndex).trim();
+                System.out.println("Línea " + (i+1) + " con comentario eliminado: '" + processedLine + "'");
             }
             
-            // Agregar la línea limpia
-            if (!processedLine.trim().isEmpty()) {
+            // CAMBIO CRÍTICO: Agregar SIEMPRE la línea, incluso si está vacía después del trim
+            // pero solo si la línea original no estaba completamente vacía
+            if (!line.trim().isEmpty()) {
                 cleanedBuilder.append(processedLine).append("\n");
             }
         }
         
         // GUARDAR EL CONTENIDO LIMPIO EN LA VARIABLE DE INSTANCIA
-        cleanedJsonContent = cleanedBuilder.toString();
+        cleanedJsonContent = cleanedBuilder.toString().trim();
+        
+        System.out.println("=== CONTENIDO JSON LIMPIO ===");
+        System.out.println("Longitud del contenido limpio: " + cleanedJsonContent.length());
+        System.out.println(cleanedJsonContent);
+        System.out.println("=== FIN DEL CONTENIDO LIMPIO ===");
+        
+        // Verificar que el contenido limpio no está vacío
+        if (cleanedJsonContent.isEmpty()) {
+            System.err.println("ERROR: cleanedJsonContent está vacío después de procesar");
+            cleanedJsonContent = rawJsonContent; // Fallback al contenido original
+            System.out.println("Usando contenido original como fallback");
+        }
         
         // Guardar el JSON limpio para inspección
         try {
@@ -341,6 +381,7 @@ public class JsonValidationSteps {
             System.out.println("JSON parseado correctamente utilizando Jackson");
         } catch (Exception jacksonException) {
             System.err.println("Error al parsear con Jackson: " + jacksonException.getMessage());
+            jacksonException.printStackTrace();
             
             // Intentar parsear directamente con org.json como fallback
             try {
@@ -348,8 +389,22 @@ public class JsonValidationSteps {
                 System.out.println("JSON parseado correctamente utilizando org.json directamente");
             } catch (JSONException orgJsonException) {
                 System.err.println("Error al parsear con org.json: " + orgJsonException.getMessage());
-                jsonContent = new JSONObject();
-                throw new RuntimeException("No se pudo parsear el JSON utilizando ningún método");
+                orgJsonException.printStackTrace();
+                
+                // Último intento: usar el contenido original sin limpiar
+                try {
+                    com.fasterxml.jackson.databind.ObjectMapper mapperFallback = new com.fasterxml.jackson.databind.ObjectMapper();
+                    mapperFallback.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_COMMENTS, true);
+                    com.fasterxml.jackson.databind.JsonNode jacksonNodeFallback = mapperFallback.readTree(rawJsonContent);
+                    String standardJsonFallback = jacksonNodeFallback.toString();
+                    jsonContent = new JSONObject(standardJsonFallback);
+                    cleanedJsonContent = rawJsonContent; // Usar el contenido original
+                    System.out.println("JSON parseado correctamente usando contenido original con Jackson");
+                } catch (Exception finalException) {
+                    System.err.println("Error final al parsear JSON: " + finalException.getMessage());
+                    jsonContent = new JSONObject();
+                    throw new RuntimeException("No se pudo parsear el JSON utilizando ningún método", finalException);
+                }
             }
         }
         
@@ -362,7 +417,7 @@ public class JsonValidationSteps {
         System.err.println("Error general al parsear JSON: " + e.getMessage());
         e.printStackTrace();
         jsonContent = new JSONObject(); // Inicializar vacío para evitar NullPointerException
-        cleanedJsonContent = ""; // Inicializar también el contenido limpio
+        cleanedJsonContent = rawJsonContent != null ? rawJsonContent : ""; // Usar contenido original como fallback
     }
 }
     

@@ -144,41 +144,61 @@ public class YamlValidationSteps {
     }
 
     @When("leo el archivo {string}")
-    public void leoElArchivo(String filePath) throws GitLabApiException {
-        try {
-            System.out.println("Intentando leer archivo: " + filePath + " del proyecto: " + projectPath);
-
-            // Obtener el proyecto primero
-            Project project = gitLabApi.getProjectApi().getProject(projectPath);
-            System.out.println("Proyecto encontrado con ID: " + project.getId());
-
-            // Obtener el archivo
-            RepositoryFile file = gitLabApi.getRepositoryFileApi()
-                    .getFile(project.getId(), filePath, "main");
-
-            // Decodificar el contenido
-            rawYamlContent = new String(
-                    java.util.Base64.getDecoder().decode(file.getContent()),
-                    StandardCharsets.UTF_8);
-
-            // Guardar una copia del archivo para verificación
+public void leoElArchivo(String filePath) throws GitLabApiException {
+    try {
+        System.out.println("Intentando leer archivo YAML: " + filePath + " del proyecto: " + projectPath);
+        
+        // Obtener el proyecto primero
+        Project project = gitLabApi.getProjectApi().getProject(projectPath);
+        System.out.println("Proyecto encontrado con ID: " + project.getId());
+        
+        // CORRECCIÓN: Intentar con diferentes ramas (igual que en el método JSON)
+        String[] branchesToTry = {"develop", "master", "main"};
+        RepositoryFile file = null;
+        String usedBranch = null;
+        
+        for (String branch : branchesToTry) {
             try {
-                java.io.FileWriter writer = new java.io.FileWriter("gitlab-yaml-content.txt");
-                writer.write(rawYamlContent);
-                writer.close();
-                System.out.println("Contenido YAML guardado en 'gitlab-yaml-content.txt'");
-            } catch (Exception e) {
-                System.err.println("Error al guardar contenido: " + e.getMessage());
+                System.out.println("Intentando obtener archivo de la rama: " + branch);
+                file = gitLabApi.getRepositoryFileApi().getFile(project.getId(), filePath, branch);
+                usedBranch = branch;
+                System.out.println("Archivo encontrado en la rama: " + branch);
+                break;
+            } catch (GitLabApiException e) {
+                System.out.println("No se encontró el archivo en la rama " + branch + ": " + e.getMessage());
             }
-
-            // NUEVO: Usar el método mejorado para parsear YAML (similar al JSON)
-            parseYamlContent();
-
-        } catch (Exception e) {
-            System.err.println("Error al leer archivo YAML: " + e.getMessage());
-            throw e;
         }
+        
+        if (file == null) {
+            throw new GitLabApiException("No se pudo encontrar el archivo en ninguna de las ramas intentadas");
+        }
+
+        // Decodificar el contenido
+        rawYamlContent = new String(
+                java.util.Base64.getDecoder().decode(file.getContent()),
+                StandardCharsets.UTF_8);
+
+        // Guardar una copia del archivo para verificación
+        try {
+            java.io.FileWriter writer = new java.io.FileWriter("gitlab-yaml-content.txt");
+            writer.write(rawYamlContent);
+            writer.close();
+            System.out.println("Contenido YAML guardado en 'gitlab-yaml-content.txt'");
+        } catch (Exception e) {
+            System.err.println("Error al guardar contenido: " + e.getMessage());
+        }
+
+        // Usar el método mejorado para parsear YAML
+        parseYamlContent();
+
+    } catch (Exception e) {
+        System.err.println("Error al leer archivo YAML: " + e.getMessage());
+        throw e;
     }
+}
+
+// También necesitas el método Then para YAML (equivalente al de JSON)
+
 
     private void parseYamlContent() {
         try {

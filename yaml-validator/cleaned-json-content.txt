@@ -1,36 +1,8 @@
 {
-  "AppSettings": {
-    "Version": "0.01.202411201030"
-  },
   "ConnectionStrings": {
-    "PensionesDB": "connection-string",
-    "TransactionsDB": "connection-string"
+    "TrackingDB": "ConnectionStrings"
   },
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "TestMode": true, 
-  "Emails": "hcofre@confuturo.cl,mrojas@confuturo.cl,jovalle@confuturo.cl,jhernandezv@confuturo.cl",
-  "Apis": {
-    "UrlClients": "http://api-clientes.qa.seguros.local/clientes/",
-    "UrlProductos": "http://api-productos.qa.seguros.local/",
-    "UrlPayment": "http://api.qa.seguros.local/payment-service/",
-    "Zendesk": {
-      "Url": "zendesk-data",
-      "TestMode": true,
-      "SendTicketFromEmail": true,
-      "Email": "zendesk-data",
-      "Ticket": {
-        "Channel": "zendesk-data"
-      }
-    }
-  },
-  "Keycloak": {
-    "Url": "http://auth-qa.confuturo.cl/auth",
-    "Realm": "confuturo-sso-qa",
-    "User": "backend-transaction-manager"
+  "Ws": {
+    "Tracking": "http://desaappsfront:86/wsTracking/wsServiceTracking.svc"
   }
 }
